@@ -28,13 +28,16 @@ export default {
   data() {
     return {
       progress: {},
+      addtime: {},
       progressinterval: undefined
     }
   },
   methods: {
     setProgress() {
       get_progress_status().then(res => {
+        // todo 融合时间和进度
         this.progress = res.data.progress
+        this.addtime = res.data.addtime
       })
     },
     formatprogress(persentage) {

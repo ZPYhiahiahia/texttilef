@@ -22,11 +22,9 @@
       >
         <template slot-scope="scope">
           <div v-if="scope.row[extractor] === 'true'">
-<!--            <i class="el-icon-check"></i>-->
             <span style="color: green;font-weight:bolder;font-size: large">✔</span>
           </div>
           <div v-if="scope.row[extractor] === 'false'">
-<!--            <i class="el-icon-close"></i>-->
             <span>❌</span>
           </div>
         </template>

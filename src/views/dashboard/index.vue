@@ -1,8 +1,5 @@
 <template>
   <div class="dashboard-container">
-    <el-image src="http://172.21.72.185:8886/api/test1">
-
-    </el-image>
     <panel-group />
     <el-divider>
       <i class="el-icon-star-on" />

@@ -2,11 +2,11 @@
   <div style="width: 100%">
     <div class="left_part" style="width: 40%;float: left;margin-left: 5%;margin-top: 10px">
       <el-form
+        ref="form"
         :model="form"
         label-width="100px"
         :rules="rules"
         style="width: 80%"
-        ref="form"
       >
         <el-switch
           v-model="value"
@@ -84,7 +84,7 @@
               :label="item.name"
               :value="item.name"
             >
-              <span>{{item.name}}</span>
+              <span>{{ item.name }}</span>
               <span style="float: left">{{ item['feturedbname'] }}</span>
               <span v-if="item.isNowdataset" style="float: right; color: greenyellow; font-size: 10px">👌</span>
             </el-option>
@@ -96,16 +96,25 @@
       </el-form>
     </div>
     <div class="right_part" style="width: 50%;margin-left: 10px;float: right;padding: 10px">
-      <div>{{ form.extractorname }}------{{ form.datasetsname }}
-        <br>
+      <div v-if="showlist.length !== 0" style="width: 83%">
+        <div style="text-align: center"><span style="text-align: center;color: #222222">mAP : {{ mAPnum }}</span></div>
+        <el-divider v-if="showlist.length !== 0" />
       </div>
-<!--      <el-image :key="index" v-for="(imgpath,index) in imglist" :src="imgpath"></el-image>-->
-      <ul>
-        <li :key="index" v-for="(imgpath,index) in imglist">
-<!--          {{ imgpath }}-->
-         <el-image :src="imgpath"></el-image>
-        </li>
-      </ul>
+      <div v-if="showlist.length !== 0" style="width: 83%">
+        <div style="text-align: center">
+          <el-image :src="srcimg"/>
+        </div>
+
+      </div>
+
+      <br>
+      <el-row v-for="(row, index) in showlist" :key="index" :gutter="10" justify="space-evenly">
+        <el-col v-for="(imgsrc,index) in row" :key="index" :span="24 / (row.length+1)">
+          <el-image :src="imgsrc" />
+        </el-col>
+      </el-row>
+      <el-divider v-if="showlist.length !== 0" />
+      <br>
     </div>
   </div>
 </template>
@@ -117,11 +126,14 @@ export default {
   name: 'OneImageTest',
   data() {
     return {
+      SHOWCOLNUM: 5,
       value: 'input',
       datasetnames: [],
       extractorsnames: [],
       featuresdata: {},
-      tmsg: '',
+      mAPnum: undefined,
+      srcimg: '',
+      showlist: [],
       imglist: [],
       form: {
         imagename: '',
@@ -192,14 +204,31 @@ export default {
             'fearturesdbnames': this.form.fearturesdbnames.toString(),
             'imagename': this.form.imagename.toString()
           })).then(res => {
+            this.showlist = []
+            this.imglist = []
+            this.mAPnum = 0
+            this.srcimg = ''
             this.$message({
               message: '测试成功',
               type: 'success'
             })
-            this.tmsg = res.data.top10.toString()
+            this.srcimg = 'http://172.21.72.185:8886/api/imagehost/?imgpath=' + res.data.src
+            this.mAPnum = res.data.mAP
             for (let i = 0; i < res.data.top10.length; i++) {
               this.imglist.push('http://172.21.72.185:8886/api/imagehost/?imgpath=' + res.data.top10[i])
             }
+            for (let i = 0; i < this.imglist.length;) {
+              var collist = []
+              for (let j = 0; j < this.SHOWCOLNUM; j++, i++) {
+                collist.push(this.imglist[i])
+                if (i >= this.imglist.length) {
+                  this.showlist.push(collist)
+                  break
+                }
+              }
+              this.showlist.push(collist)
+            }
+            console.log(this.showlist)
           })
         } else {
           console.log('error submit!!')
